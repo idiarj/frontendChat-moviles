@@ -1,9 +1,11 @@
-import { StyleSheet, SafeAreaView } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/(userPages)/login';
-import Home from './app/home';
 import Register from './app/(userPages)/register';
+import Home from './app/home';
+import { StyleSheet, SafeAreaView } from 'react-native';
+
 
 const Stack = createStackNavigator();
 
@@ -16,16 +18,27 @@ export default function App() {
           name="Login" 
           component={Login} 
           options={{ headerShown: false }} 
+
         />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen 
+          name="Register" 
+          component={Register} 
+          options={{ headerShown: false }} 
+
+        />
+        <Stack.Screen 
+          name="Home" 
+          component={Home} 
+          options={{ headerShown: false }} 
+
+        />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({  
   container: {
     flex: 1,
   },

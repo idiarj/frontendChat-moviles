@@ -1,150 +1,212 @@
 import React, { useState } from 'react';
-import { View, Text, ImageBackground, StyleSheet, Alert, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  Animated,
+  Easing,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import CustomInput from './../components/customInput';
 import CustomButton from './../components/customButton';
-import { Link, router } from 'expo-router';
-// import { fetchsito1 } from '../../utils/fetchMethod';
+import fondo from '../../assets/fondoR.png';
 
 const Register = () => {
-    const [email, setCorreo] = useState('');
-    const [password, setPassword] = useState('');
-    const [Error, setError] = useState('');
-    const [username, setUsername] = useState('');
+  const navigation = useNavigation();
+  const [email, setCorreo] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [gender, setGender] = useState(null); // Estado para género seleccionado
 
-    const onRegisterPressed = async () => {
-        try {
-            console.log('kklkjlkjlk')
-            if (!email || !password || !username) {
-                setError('Por favor, llena todos los campos');
-                return;
-            }
-            const response = await fetchsito1.post('/user/register', { username, email, password });
-            const data = await response.json();
-            console.log(data);
-            if (response.ok) {
-                router.push({
-                    pathname: 'register2',
-                    params: { email }
-                });
-            } else {
-                setError(data.error);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+  // Animación para el formulario
+  const fadeAnim = new Animated.Value(0);
 
-    return (
-        <View style={styles.background}>
-            <View style={styles.container}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                    <Image source={logo} style={{ width: 100, height: 80 }} />
-                    <Text style={styles.Title}>Filmatic</Text>
-                </View>
-                <Text style={styles.subTitle1}>Registro Paso 1</Text>
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.out(Easing.exp),
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
-                <CustomInput
-                    value={username}
-                    setvalue={setUsername}
-                    placeholder="Usuario"
-                />
+  const onRegisterPressed = async () => {
+    try {
+      if (!email || !password || !username || !gender) {
+        setError('Por favor, llena todos los campos y selecciona un género');
+        return;
+      }
+      console.log(
+        'Usuario:',
+        username,
+        'Correo:',
+        email,
+        'Contraseña:',
+        password,
+        'Género:',
+        gender
+      );
 
+      // Simulación de registro (reemplazar con fetch)
+      const response = {
+        ok: true, // Cambiar según la respuesta real del servidor
+        data: { email },
+      };
 
-                <CustomInput
-                    value={email}
-                    setvalue={setCorreo}
-                    placeholder="Correo"
-                />
+      if (response.ok) {
+        Alert.alert('Registro exitoso', 'Ahora puedes iniciar sesión');
+        navigation.navigate('Login'); // Navega al Login
+      } else {
+        setError('Error al registrar. Intenta nuevamente.');
+      }
+    } catch (error) {
+      console.error('Error al registrar:', error);
+      setError('Ocurrió un error inesperado. Intenta nuevamente.');
+    }
+  };
 
-                <CustomInput
-                    value={password}
-                    setvalue={setPassword}
-                    placeholder="Contraseña"
-                    secureTextEntry
-                />
+  return (
 
-                <Text style={styles.errorText}>{Error}</Text>
+    <ImageBackground source={fondo} style={styles.background}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <Text style={styles.subTitle1}>Registro</Text>
 
-                <Text style={styles.signInText}>Al registrarte, confirmas que aceptas nuestros términos de uso y política de privacidad.</Text>
+        <CustomInput
+          value={username}
+          setvalue={setUsername}
+          placeholder="Usuario"
+        />
+        <CustomInput value={email} setvalue={setCorreo} placeholder="Correo" />
+        <CustomInput
+          value={password}
+          setvalue={setPassword}
+          placeholder="Contraseña"
+          secureTextEntry
+        />
 
-                <CustomButton text="Registrarse" onPress={onRegisterPressed} />
-
-                <Link href="/login" style={styles.signInLink}>Volver al login</Link>
-
-            </View>
+        {/* Campo de selección de género */}
+        <View style={styles.genderContainer}>
+          <TouchableOpacity
+            style={[
+              styles.genderButton,
+              gender === 'Hombre' && styles.genderSelected,
+            ]}
+            onPress={() => setGender('Hombre')}
+          >
+            <Text
+              style={[
+                styles.genderText,
+                gender === 'Hombre' && styles.genderTextSelected,
+              ]}
+            >
+              Hombre
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.genderButton,
+              gender === 'Mujer' && styles.genderSelected,
+            ]}
+            onPress={() => setGender('Mujer')}
+          >
+            <Text
+              style={[
+                styles.genderText,
+                gender === 'Mujer' && styles.genderTextSelected,
+              ]}
+            >
+              Mujer
+            </Text>
+          </TouchableOpacity>
         </View>
-    );
+
+        <Text style={styles.errorText}>{error}</Text>
+
+        <Text style={styles.signInText}>
+          Al registrarte, confirmas que aceptas nuestros términos de uso y
+          política de privacidad.
+        </Text>
+
+        <CustomButton text="Registrarse" onPress={onRegisterPressed} />
+
+        <Text
+          style={styles.signInLink}
+          onPress={() => navigation.navigate('Login')}
+        >
+          Volver al login
+        </Text>
+      </Animated.View>
+    </ImageBackground>
+  );
 };
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#3a0707',
-    },
-    container: {
-        width: '80%',
-        alignItems: 'center',
-        borderRadius: 10,
-        padding: 20,
-        marginTop: -120,
-    },
-    subTitle1: {
-        color: 'white',
-        fontSize: 25,
-        marginBottom: 20,
-        marginLeft: 15,
-        marginTop: 10,
-    },
-    Title: {
-        padding: 10,
-        fontSize: 30,
-        color: 'white',
-        marginLeft: 5,
-        marginTop: 25,
-        fontFamily: 'Bukhari-Script',
-      },
-    title: {
-        color: 'white',
-        fontSize: 30,
-        alignSelf: 'center',
-        fontFamily: 'Garet',
-        marginBottom: 30,
-        marginTop: 50,
-    },
-    title1: {
-        color: 'white',
-        fontSize: 25,
-        alignSelf: 'center',
-        fontFamily: 'Garet',
-        marginBottom: 30,
-    },
-    subTitle: {
-        color: 'white',
-        fontSize: 25,
-        marginBottom: 20,
-        marginLeft: 15,
-    },
- 
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontFamily: 'Garet',
-    },
-    errorText: {
-        color: 'red',
-    },
-    signInText: {
-        color: 'white',
-        marginTop: 3,        
-        alignSelf: 'center',
-    },
-    signInLink: {
-        color: 'white',
-        textDecorationLine: 'underline',
-        marginTop: 10,
-    }
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#3a0707',
+  },
+  container: {
+    width: '80%',
+    alignItems: 'center',
+    borderRadius: 10,
+    padding: 20,
+    marginTop: -120,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Fondo semi-transparente
+  },
+  subTitle1: {
+    color: 'white',
+    fontSize: 25,
+    marginBottom: 20,
+    marginLeft: 15,
+    marginTop: 10,
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 15,
+  },
+  genderButton: {
+    width: '45%',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'white',
+    alignItems: 'center',
+  },
+  genderSelected: {
+    backgroundColor: 'white',
+    borderColor: 'white',
+  },
+  genderText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  genderTextSelected: {
+    color: '#3a0707', // Cambia a negro cuando está seleccionado
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+  },
+  signInText: {
+    color: 'white',
+    marginTop: 15,
+    alignSelf: 'center',
+    textAlign: 'center',
+  },
+  signInLink: {
+    color: 'white',
+    textDecorationLine: 'underline',
+    marginTop: 20,
+    textAlign: 'center',
+  },
 });
 
 export default Register;
