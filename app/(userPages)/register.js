@@ -16,11 +16,11 @@ import fondo from '../../assets/fondoR.png';
 
 const Register = () => {
   const navigation = useNavigation();
-  const [email, setCorreo] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [gender, setGender] = useState(null); // Estado para género seleccionado
+  const [error, setError] = useState('');
 
   // Animación para el formulario
   const fadeAnim = new Animated.Value(0);
@@ -34,32 +34,48 @@ const Register = () => {
     }).start();
   }, []);
 
-  const onRegisterPressed = async () => {
+  // Función para calcular la edad
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const onNextPressed = async () => {
     try {
-      if (!email || !password || !username || !gender) {
+      if (!name || !lastName || !birthDate || !gender) {
         setError('Por favor, llena todos los campos y selecciona un género');
         return;
       }
+
+      const age = calculateAge(birthDate); // Calcula la edad
       console.log(
-        'Usuario:',
-        username,
-        'Correo:',
-        email,
-        'Contraseña:',
-        password,
+        'Nombre:',
+        name,
+        'Apellido:',
+        lastName,
+        'Fecha de nacimiento:',
+        birthDate,
+        'Edad:',
+        age,
         'Género:',
         gender
       );
 
-      // Simulación de registro (reemplazar con fetch)
-      const response = {
-        ok: true, // Cambiar según la respuesta real del servidor
-        data: { email },
-      };
-
+      // Simulación de validación (reemplazar con fetch)
+      const response = { ok: true }; // Simulación
       if (response.ok) {
-        Alert.alert('Registro exitoso', 'Ahora puedes iniciar sesión');
-        navigation.navigate('Login'); // Navega al Login
+        Alert.alert(
+          'Registro exitoso',
+          `Has avanzado al siguiente paso. Tu edad: ${age} años`
+        );
+        navigation.navigate('NextStep', { name, lastName, birthDate, gender, age }); // Navega al siguiente paso
       } else {
         setError('Error al registrar. Intenta nuevamente.');
       }
@@ -70,22 +86,16 @@ const Register = () => {
   };
 
   return (
-
     <ImageBackground source={fondo} style={styles.background}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <Text style={styles.subTitle1}>Registro</Text>
 
+        <CustomInput value={name} setvalue={setName} placeholder="Nombre" />
+        <CustomInput value={lastName} setvalue={setLastName} placeholder="Apellido" />
         <CustomInput
-          value={username}
-          setvalue={setUsername}
-          placeholder="Usuario"
-        />
-        <CustomInput value={email} setvalue={setCorreo} placeholder="Correo" />
-        <CustomInput
-          value={password}
-          setvalue={setPassword}
-          placeholder="Contraseña"
-          secureTextEntry
+          value={birthDate}
+          setvalue={setBirthDate}
+          placeholder="Fecha de nacimiento (año-mes-dia)"
         />
 
         {/* Campo de selección de género */}
@@ -126,12 +136,7 @@ const Register = () => {
 
         <Text style={styles.errorText}>{error}</Text>
 
-        <Text style={styles.signInText}>
-          Al registrarte, confirmas que aceptas nuestros términos de uso y
-          política de privacidad.
-        </Text>
-
-        <CustomButton text="Registrarse" onPress={onRegisterPressed} />
+        <CustomButton text="Siguiente" onPress={onNextPressed} />
 
         <Text
           style={styles.signInLink}
@@ -194,12 +199,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginTop: 10,
-  },
-  signInText: {
-    color: 'white',
-    marginTop: 15,
-    alignSelf: 'center',
-    textAlign: 'center',
   },
   signInLink: {
     color: 'white',
