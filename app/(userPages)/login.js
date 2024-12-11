@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {View,Text,ImageBackground,StyleSheet,TextInput,TouchableOpacity,Alert,} from 'react-native';
+import {View,Text,ImageBackground,StyleSheet,TouchableOpacity,Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
-// import LottieView from 'lottie-react-native';
+import LottieView from 'lottie-react-native';
 
 
 const Login = () => {
@@ -36,6 +36,14 @@ const Login = () => {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.container}>
+      <View style={styles.animacion}>
+        <LottieView
+            source={require('../../assets/animations/search.json')}
+            autoPlay
+            loop
+            style={{ width: 150, height: 150 }}
+          />
+        </View>
         <CustomInput
           value={username}
           setvalue={setUsername}
@@ -59,15 +67,6 @@ const Login = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* <View>
-        <LottieView
-            source={require('../../assets/animations/Animation - 1733772657313.json')}
-            autoPlay
-            loop
-            style={{ width: 50, height: 50 }}
-          />
-        </View> */}
-
       </View>
       
     </ImageBackground>
@@ -86,6 +85,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginTop: 100,
+  },
+  animacion: {
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: -120,
   },
   title: {
     color: 'white',

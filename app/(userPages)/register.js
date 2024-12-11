@@ -4,35 +4,25 @@ import {
   Text,
   StyleSheet,
   Alert,
-  Animated,
-  Easing,
   TouchableOpacity,
   ImageBackground,
+  Modal,
+  Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import CustomInput from './../components/customInput';
 import CustomButton from './../components/customButton';
-import fondo from '../../assets/fondoR.png';
+import fondo from '../../assets/fondo.png';
 
 const Register = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [gender, setGender] = useState(null); // Estado para género seleccionado
+  const [birthDate, setBirthDate] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [gender, setGender] = useState(null);
   const [error, setError] = useState('');
-
-  // Animación para el formulario
-  const fadeAnim = new Animated.Value(0);
-
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      easing: Easing.out(Easing.exp),
-      useNativeDriver: true,
-    }).start();
-  }, []);
 
   // Función para calcular la edad
   const calculateAge = (birthDate) => {
@@ -54,14 +44,19 @@ const Register = () => {
         return;
       }
 
-      const age = calculateAge(birthDate); // Calcula la edad
+      const age = calculateAge(birthDate);
+      if (age < 18) {
+        setError('Debes ser mayor de 18 años para registrarte.');
+        return;
+      }
+
       console.log(
         'Nombre:',
         name,
         'Apellido:',
         lastName,
         'Fecha de nacimiento:',
-        birthDate,
+        birthDate.toISOString().split('T')[0],
         'Edad:',
         age,
         'Género:',
@@ -75,7 +70,7 @@ const Register = () => {
           'Registro exitoso',
           `Has avanzado al siguiente paso. Tu edad: ${age} años`
         );
-        navigation.navigate('NextStep', { name, lastName, birthDate, gender, age }); // Navega al siguiente paso
+        navigation.navigate('NextStep', { name, lastName, birthDate, gender, age });
       } else {
         setError('Error al registrar. Intenta nuevamente.');
       }
@@ -87,16 +82,49 @@ const Register = () => {
 
   return (
     <ImageBackground source={fondo} style={styles.background}>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        <Text style={styles.subTitle1}>Registro</Text>
-
+      <View style={styles.container}>
         <CustomInput value={name} setvalue={setName} placeholder="Nombre" />
         <CustomInput value={lastName} setvalue={setLastName} placeholder="Apellido" />
-        <CustomInput
-          value={birthDate}
-          setvalue={setBirthDate}
-          placeholder="Fecha de nacimiento (año-mes-dia)"
-        />
+
+        {/* Fecha de nacimiento con Modal */}
+        <TouchableOpacity
+          style={styles.datePicker}
+          onPress={() => setShowModal(true)}
+        >
+          <Text style={styles.datePickerText}>
+            {birthDate ? birthDate.toISOString().split('T')[0] : 'Selecciona tu fecha de nacimiento'}
+          </Text>
+        </TouchableOpacity>
+
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <DateTimePicker
+                value={birthDate || new Date('2006-01-01')}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={(event, selectedDate) => {
+                  setShowModal(false);
+                  if (selectedDate) {
+                    setBirthDate(selectedDate);
+                  }
+                }}
+                maximumDate={new Date('2006-12-31')}
+              />
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.modalCloseButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         {/* Campo de selección de género */}
         <View style={styles.genderContainer}>
@@ -144,7 +172,7 @@ const Register = () => {
         >
           Volver al login
         </Text>
-      </Animated.View>
+      </View>
     </ImageBackground>
   );
 };
@@ -161,8 +189,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     padding: 20,
-    marginTop: -120,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Fondo semi-transparente
+    marginTop: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   subTitle1: {
     color: 'white',
@@ -170,6 +198,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 15,
     marginTop: 10,
+  },
+  datePicker: {
+    width: '100%',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'white',
+    marginVertical: 15,
+    alignItems: 'center',
+  },
+  datePickerText: {
+    color: 'white',
   },
   genderContainer: {
     flexDirection: 'row',
@@ -194,7 +234,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   genderTextSelected: {
-    color: '#3a0707', // Cambia a negro cuando está seleccionado
+    color: '#3a0707',
   },
   errorText: {
     color: 'red',
@@ -204,6 +244,28 @@ const styles = StyleSheet.create({
     color: 'white',
     textDecorationLine: 'underline',
     marginTop: 20,
+    textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalCloseButton: {
+    marginTop: 10,
+    backgroundColor: '#741d1d',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalCloseButtonText: {
+    color: 'white',
     textAlign: 'center',
   },
 });

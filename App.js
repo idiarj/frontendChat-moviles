@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/(userPages)/login';
 import Register from './app/(userPages)/register';
 import Profile from './app/(userPages)/profile';
+import Description from './app/(userPages)/Description';
 import Home from './app/home';
 import Chat from './app/Chat';
 import { StyleSheet, SafeAreaView } from 'react-native';
@@ -15,7 +16,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Register">
+      <Stack.Navigator initialRouteName="Description">
         <Stack.Screen 
           name="Login" 
           component={Login} 
@@ -45,7 +46,13 @@ export default function App() {
           component={ Profile } 
           options={{ headerShown: false }} 
 
-        />
+        /> 
+        <Stack.Screen 
+        name="Description" 
+        component={ Description } 
+        options={{ headerShown: false }} 
+
+      />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaView>
