@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ImageBackground,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {View,Text,ImageBackground,StyleSheet,TextInput,TouchableOpacity,Alert,} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import fondo from '../../assets/fond0.png';
-import CustomInput from './../components/customInput';
-import CustomButton from './../components/customButton';
+import fondo from '../../assets/fondo.png';
+import CustomInput from '../components/customInput';
+import CustomButton from '../components/customButton';
+// import LottieView from 'lottie-react-native';
+
 
 const Login = () => {
   const navigation = useNavigation();
@@ -64,7 +58,18 @@ const Login = () => {
             <Text style={styles.link}>Regístrate aquí</Text>
           </Text>
         </TouchableOpacity>
+
+        {/* <View>
+        <LottieView
+            source={require('../../assets/animations/Animation - 1733772657313.json')}
+            autoPlay
+            loop
+            style={{ width: 50, height: 50 }}
+          />
+        </View> */}
+
       </View>
+      
     </ImageBackground>
   );
 };
@@ -104,3 +109,6 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
+
+
+

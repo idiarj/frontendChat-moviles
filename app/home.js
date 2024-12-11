@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, Animated, PanResponder } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, Animated, PanResponder, ImageBackground } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import users from './data/user'; // Ruta correcta
+import users from './data/user'; 
+import { NavBar } from './components/navbar';
+import fondo from '../assets/fondoHB.png'; 
 
 const Home = () => {
   const [profiles, setProfiles] = useState(users);
@@ -41,7 +43,11 @@ const Home = () => {
 
   const renderProfile = () => {
     if (profiles.length === 0) {
-      return <Text style={styles.noProfilesText}>No hay más perfiles disponibles</Text>;
+      return (
+        <View style={styles.noProfilesContainer}>
+          <Text style={styles.noProfilesText}>No hay más perfiles disponibles</Text>
+        </View>
+      );
     }
 
     const profile = profiles[0];
@@ -74,32 +80,40 @@ const Home = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {renderProfile()}
-      <View style={styles.buttonsContainer}>
-        <AntDesign
-          name="closecircle"
-          size={60}
-          color="red"
-          onPress={() => swipeOut('left')}
-          style={styles.icon}
-        />
-        <AntDesign
-          name="checkcircle"
-          size={60}
-          color="green"
-          onPress={() => swipeOut('right')}
-          style={styles.icon}
-        />
+    <ImageBackground source={fondo} style={styles.background}>
+      <View style={styles.container}>
+        {renderProfile()}
+        <View style={styles.buttonsContainer}>
+          <View style={styles.circleButton}>
+            <AntDesign
+              name="close"
+              size={40}
+              color="red"
+              onPress={() => swipeOut('left')}
+            />
+          </View>
+          <View style={styles.circleButton}>
+            <AntDesign
+              name="heart"
+              size={40}
+              color="green"
+              onPress={() => swipeOut('right')}
+            />
+          </View>
+        </View>
       </View>
-    </View>
+      <NavBar />
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -110,6 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     position: 'absolute',
     shadowColor: '#000',
+    top:'13%',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -127,20 +142,39 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   bio: {
     fontSize: 16,
     color: '#555',
+    textAlign: 'center',
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     width: '60%',
     position: 'absolute',
     bottom: 50,
   },
-  icon: {
-    padding: 10,
+  circleButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 35,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    top:'-20%',
+  },
+  noProfilesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   noProfilesText: {
     fontSize: 18,
