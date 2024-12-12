@@ -57,7 +57,7 @@ const Register = () => {
 
                 <CustomButton text="Registrarse" onPress={onRegisterPressed} />
 
-                <Link href="/login" style={styles.signInLink}>Volver al login</Link>
+                <Link href="/login" repalce style={styles.signInLink}>Volver al login</Link>
 
             </View>
         </ImageBackground>

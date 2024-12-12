@@ -15,11 +15,27 @@ const ChatScreen = () => {
       const response = await fetchWrapper.get({
         endpoint: '/user/getMatches'
       })
-      const data = await response.json();
-      console.log(response)
+      const {data} = await response.json();
+      //console.log(response)
       if(response.ok){
-        console.log(data)
-        // setMaches(data.data);
+        // console.log(data)
+        setMaches(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getChats = async () => {
+    try {
+      const response = await fetchWrapper.get({
+        endpoint: '/user/getChats'
+      })
+      console.log(response.ok)
+      const {data} = await response.json();
+      // console.log(data)
+      if(response.ok){
+        setChats(data);
       }
     } catch (error) {
       console.error(error);
@@ -28,6 +44,7 @@ const ChatScreen = () => {
   useFocusEffect(
     useCallback(()=>{
       getMatches();
+      getChats();
     }, [])
   )
   const newMatches = [
@@ -53,12 +70,16 @@ const ChatScreen = () => {
         <View>
           <FlatList
             horizontal
-            data={newMatches}
-            keyExtractor={(item) => item.id}
+            data={matches}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <View style={styles.matchContainer}>
-                <Image source={{ uri: item.image }} style={styles.matchImage} />
-                <Text style={styles.matchName}>{item.name}</Text>
+              {item.image ? (
+              <Image source={{ uri: item.image }} style={styles.image} />
+                ) : (
+              <Ionicons name="person-outline" size={40} color="black" style={styles.image} />
+                )}
+                <Text style={styles.matchName}>{item.firstName}</Text>
               </View>
             )}
             showsHorizontalScrollIndicator={false}
@@ -69,17 +90,26 @@ const ChatScreen = () => {
 
         <Text style={styles.title}>Mensajes</Text>
         <FlatList
-          data={messages}
+          data={chats}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.messageContainer}>
-              <Image source={{ uri: item.image }} style={styles.messageImage} />
-              <View style={styles.messageTextContainer}>
-                <Text style={styles.messageName}>{item.name}</Text>
-                <Text style={styles.messageText}>{item.message}</Text>
+          renderItem={({ item }) => {
+            console.log('item', item); // Esto imprimirá cada item en la consola
+            const user1FirstName = item.id_user1 ? item.id_user1.firstName : '';
+            const user2FirstName = item.id_user2 ? item.id_user2.firstName : '';
+            return (
+              <View style={styles.messageContainer}>
+                {item.image ? (
+                  <Image source={{ uri: item.image }} style={styles.image} />
+                ) : (
+                  <Ionicons name="person-outline" size={35} color="black" style={styles.image} />
+                )}
+                <View style={styles.messageTextContainer}>
+                  <Text style={styles.messageName}>{user1FirstName || user2FirstName}</Text>
+                  <Text style={styles.messageText}>{item.message ? item.message : `No hay mensajes entre tu y ${user1FirstName || user2FirstName}`}</Text>
+                </View>
               </View>
-            </View>
-          )}
+            );
+          }}
         />
       </View>
       <NavBar />
