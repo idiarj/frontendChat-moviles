@@ -4,7 +4,9 @@ class FetchWrapper {
         //console.log(this.baseUrl);
     }
 
-    async post({endpoint, data}) {
+    async post({endpoint, data, headers = {
+        'Content-Type': 'application/json',
+    }}) {
         try {
             //console.log('POST METHOD')
             console.log(endpoint)
@@ -108,5 +110,5 @@ class FetchWrapper {
 
 
 module.exports = {
-    fetchWrapper: new FetchWrapper('http://192.168.0.119:3000')
+    fetchWrapper: new FetchWrapper('http://192.168.0.103:3000')
 };

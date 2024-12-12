@@ -64,6 +64,7 @@ const InfoUser = () => {
         'Género:',
         gender
       );
+      console.log('a')
       console.log({ firstName, lastName, birthDate, gender, username, email, password })
       router.push({
         pathname: '/Description',

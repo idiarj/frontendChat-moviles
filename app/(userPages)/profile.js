@@ -160,8 +160,8 @@ export default function Profile() {
         <View style={styles.profileSection}>
           {/* Imagen de perfil */}
           <View style={styles.imageContainer}>
-            {user.image ? (
-              <Image source={{ uri: user.image }} style={styles.profileImage} />
+            {user.profilePicture ? (
+              <Image source={{ uri: user.profilePicture }} style={styles.profileImage} />
             ) : (
               <Ionicons name="person-outline" size={60} color="black" />
             )}

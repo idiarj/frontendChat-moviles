@@ -9,15 +9,17 @@ import {
   TextInput,
   Pressable,
   Alert,
-  TouchableOpacity,
+  Platform
 } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
+import {fetchWrapper} from '../../utils/fetchWrapper.js';
 import * as ImagePicker from "expo-image-picker"; // Importa Image Picker
 import CustomButton from "./../components/customButton";
 import fondo from "../../assets/fondo.png";
 
 const Description = () => {
   const router = useRouter();
+  const { firstName, lastName, birthDate, gender, username, email, password } = useLocalSearchParams();
   const [selectedImage, setSelectedImage] = useState(null); // Imagen seleccionada
   const [description, setDescription] = useState("");
   const [interestedIn, setInterestedIn] = useState(null); 
@@ -47,29 +49,80 @@ const Description = () => {
   };
 
   const handleSave = async () => {
-    if (!description || !interestedIn || !selectedImage) {
-      setError("Por favor completa todos los campos y selecciona una imagen.");
-      return;
+    try {
+      const formData = new FormData();
+      if (selectedImage) {
+        const filename = selectedImage.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+  
+        formData.append('file', {
+          uri: Platform.OS === 'ios' ? selectedImage.replace('file://', '') : selectedImage,
+          name: filename,
+          type: type,
+        });
+      }
+
+      formData.append('upload_preset', 'finder-app');
+      formData.append('cloud_name', 'dqc0yku26');
+      let dataCloudinary;
+      const responseCloudinary = await fetch('https://api.cloudinary.com/v1_1/dqc0yku26/image/upload',{
+        method: 'POST',
+        body: formData
+      })
+      console.log(responseCloudinary.ok)
+      if(responseCloudinary.ok){
+        dataCloudinary = await responseCloudinary.json();
+        console.log('dataCloudinary',dataCloudinary)
+      }else{
+        console.log('Error al subir imagen')
+        setError('Error al subir imagen')
+        return
+      }
+
+      const response = await fetchWrapper.post({endpoint: '/user/register',
+        data: {
+          username,
+          password,
+          email,
+          firstName,
+          lastName,
+          birthDate,
+          gender,
+          description,
+          interestedIn,
+          imageUrl: dataCloudinary.secure_url
+        }
+        })
+
+
+        console.log(response.ok)
+        const data = await response.json();
+        console.log('data',data)
+
+        if(response.ok){
+          console.log('Registro de usuario exitoso.')
+          router.push({
+            pathname: '/answerQuestion',
+            params: { email }
+          })
+        }
+    } catch (error) {
+      console.error(error);
     }
-    // Aquí puedes añadir la lógica para guardar la información
-    console.log("Descripción:", description);
-    console.log("Interesado en:", interestedIn);
-    console.log("Imagen seleccionada:", selectedImage);
-    Alert.alert("Datos guardados", "Tu información ha sido actualizada correctamente.");
-    router.push("/nextStep");
   };
 
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.label}>Sube tu foto:</Text>
-        <TouchableOpacity style={styles.imageButton} onPress={handlePickImage}>
+        <Pressable style={styles.imageButton} onPress={handlePickImage}>
           {selectedImage ? (
             <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
           ) : (
             <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
           )}
-        </TouchableOpacity>
+        </Pressable>
 
         <Text style={styles.label}>Agrega una pequeña descripción sobre ti:</Text>
         <TextInput
