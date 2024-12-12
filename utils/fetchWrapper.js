@@ -1,6 +1,6 @@
 class FetchWrapper {
     constructor(baseUrl) {
-        this.baseUrl = baseUrl ? baseUrl : 'http://192.168.0.103:3000';
+        this.baseUrl = baseUrl ? baseUrl : 'http://192.168.0.119:3000';
         //console.log(this.baseUrl);
     }
 
@@ -108,5 +108,5 @@ class FetchWrapper {
 
 
 module.exports = {
-    fetchWrapper: new FetchWrapper('http://192.168.0.103:3000')
+    fetchWrapper: new FetchWrapper('http://192.168.0.119:3000')
 };
