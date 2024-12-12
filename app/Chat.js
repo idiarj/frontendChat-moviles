@@ -1,9 +1,22 @@
-import React from 'react';
+import {useState, useCallback} from 'react';
+import { useFocusEffect } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Image, FlatList, TextInput, StyleSheet, ImageBackground } from 'react-native';
 import { NavBar } from './components/navbar';
+import fetchWrapper from '../utils/fetchWrapper';
 import fondo from '../assets/fondoHB.png';
 
 const ChatScreen = () => {
+  const [matches, setMaches] = useState([]);
+  const [chats, setChats] = useState([]);
+
+  const getMatches = async () => {
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
   const newMatches = [
     { id: '1', name: 'Erica', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
     { id: '2', name: 'Kayleigh', image: 'https://randomuser.me/api/portraits/women/2.jpg' },

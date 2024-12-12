@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Alert,
   TextInput
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { NavBar } from '../components/navbar';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchWrapper } from '../../utils/fetchWrapper.js';
@@ -99,6 +100,7 @@ export default function Profile() {
 
   const getUserInfo = async () =>{
     try {
+      console.log('aaaaaaaaaaa')
       const response = await fetchWrapper.get({endpoint: '/user/getUser'});
       const data = await response.json();
       console.log(data)
@@ -118,6 +120,7 @@ export default function Profile() {
       const data = await response.json();
       console.log(data)
       if(response.ok){
+        setUser({});
         router.push('/login');
       }
     } catch (error) {
@@ -125,9 +128,11 @@ export default function Profile() {
     }
   }
 
-  useEffect(() => {
-    getUserInfo();
-  }, [reload])
+  useFocusEffect(
+    useCallback(() => {
+      getUserInfo();
+    }, [reload])
+  );
 
   const handleSaveUserInfo = async () => {
     try {
