@@ -4,7 +4,7 @@ import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import { Link, useRouter } from 'expo-router';
-// import { fetchsito1 } from '../../utils/fetchMethod';
+// import { fetchWrapper } from '../../utils/fetchMethod';
 
 const Register = () => {
     const [email, setCorreo] = useState('');

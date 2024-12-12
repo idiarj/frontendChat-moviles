@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
-                const response = await fetchsito1.get('/user/security-question');
+                const response = await fetchWrapper.get('/user/security-question');
                 const data = await response.json();
                 if (response.ok) {
                     setPregunta(data.pregunta);  
@@ -38,7 +38,7 @@ const ForgotPassword = () => {
         }
 
         try {
-            const response = await fetchsito1.post("/user/validate-answer", { respuesta });
+            const response = await fetchWrapper.post("/user/validate-answer", { respuesta });
             const data = await response.json();
             if (response.ok) {
                 setError("");
