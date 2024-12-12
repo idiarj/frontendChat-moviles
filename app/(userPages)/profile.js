@@ -11,7 +11,7 @@ import {
   TextInput
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { NavBar } from '../components/navbar';
+import NavBar from '../components/navbar';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import { useRouter } from 'expo-router';

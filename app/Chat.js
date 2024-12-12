@@ -2,8 +2,8 @@ import {useState, useCallback} from 'react';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Image, FlatList, TextInput, StyleSheet, ImageBackground } from 'react-native';
-import { NavBar } from './components/navbar';
-import fetchWrapper from '../utils/fetchWrapper';
+import NavBar from './components/navbar';
+import {fetchWrapper} from '../utils/fetchWrapper.js';
 import fondo from '../assets/fondoHB.png';
 
 const ChatScreen = () => {
@@ -12,11 +12,24 @@ const ChatScreen = () => {
 
   const getMatches = async () => {
     try {
-      
+      const response = await fetchWrapper.get({
+        endpoint: '/user/getMatches'
+      })
+      const data = await response.json();
+      console.log(response)
+      if(response.ok){
+        console.log(data)
+        // setMaches(data.data);
+      }
     } catch (error) {
-      
+      console.error(error);
     }
   }
+  useFocusEffect(
+    useCallback(()=>{
+      getMatches();
+    }, [])
+  )
   const newMatches = [
     { id: '1', name: 'Erica', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
     { id: '2', name: 'Kayleigh', image: 'https://randomuser.me/api/portraits/women/2.jpg' },

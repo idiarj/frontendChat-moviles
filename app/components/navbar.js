@@ -3,24 +3,24 @@ import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 
-export function NavBar() {
+function NavBar() {
   return (
-    <View style={styles.navbar}>
-      <Link href="/home">
+    <View style={styles.NavBar}>
+      <Link href="/home" replace>
         <Ionicons name="home-outline" size={32} color="white" style={styles.icon} />
       </Link>
-      <Link href="/Chat">
+      <Link href="/Chat" replace >
         <Ionicons name="chatbubble-ellipses-outline" size={32} color="white" />
       </Link>
-      <Link href="/profile">
+      <Link href="/profile" replace>
         <Ionicons name="person-outline" size={32} color="white" style={styles.icon} />
       </Link>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  navbar: {
+  NavBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -36,3 +36,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
+
+export default NavBar;

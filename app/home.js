@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, Animated, PanResponder, ImageBackground } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import users from './data/user'; 
-import { NavBar } from './components/navbar';
+import NavBar from './components/navbar';
 import { Ionicons } from '@expo/vector-icons';
 import fondo from '../assets/fondoHB.png'; 
 import {fetchWrapper} from '../utils/fetchWrapper.js';
