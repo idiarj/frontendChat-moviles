@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View,Text,ImageBackground,StyleSheet,TouchableOpacity,Alert} from 'react-native';
+import {View,Text,ImageBackground,StyleSheet,Pressable,Alert} from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import fondo from '../../assets/fondo.png';
@@ -70,12 +70,12 @@ const Login = () => {
             </Text>
         </Link>
 
-        <TouchableOpacity onPress={() => router.navigate('register')}>
+        <Pressable onPress={() => router.push('register')}>
           <Text style={styles.linkText}>
             ¿No tienes cuenta?{' '}
             <Text style={styles.link}>Regístrate aquí</Text>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
       </View>
       

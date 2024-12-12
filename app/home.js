@@ -133,8 +133,8 @@ const Home = () => {
           },
         ]}
       >
-        {profile.image ? (
-              <Image source={{ uri: profile.image }} style={styles.image} />
+        {profile.profilePicture ? (
+              <Image source={{ uri: profile.profilePicture }} style={styles.image} />
             ) : (
               <Ionicons name="person-outline" size={375} color="black" style={styles.image} />
         )}

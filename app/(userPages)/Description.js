@@ -26,25 +26,56 @@ const Description = () => {
   const [error, setError] = useState("");
 
   // Maneja la selección de imágenes desde la galería
-  const handlePickImage = async () => {
+   const handlePickImage = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
         Alert.alert("Permiso denegado", "Se necesita acceso a la galería para continuar.");
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri); // Actualiza la imagen seleccionada
+  
+      const cameraPermissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      if (!cameraPermissionResult.granted) {
+        Alert.alert("Permiso denegado", "Se necesita acceso a la cámara para continuar.");
+        return;
       }
+  
+      const result = await Alert.alert(
+        "Seleccionar imagen",
+        "Elige una opción",
+        [
+          { text: "Galería", onPress: async () => await pickImageFromLibrary() },
+          { text: "Cámara", onPress: async () => await takePhoto() },
+          { text: "Cancelar", style: "cancel" }
+        ]
+      );
+  
     } catch (error) {
       console.error("Error seleccionando imagen:", error);
       Alert.alert("Error", "Ocurrió un problema seleccionando la imagen.");
+    }
+  };
+  
+  const pickImageFromLibrary = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri); // Actualiza la imagen seleccionada
+    }
+  };
+  
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri); // Actualiza la imagen seleccionada
     }
   };
 

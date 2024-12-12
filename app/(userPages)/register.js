@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ImageBackground, StyleSheet, Alert, Image } from 'react-native';
 import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
@@ -12,6 +12,16 @@ const Register = () => {
     const [Error, setError] = useState('');
     const [username, setUsername] = useState('');
     const router = useRouter();
+
+    useEffect(() => {
+        // Limpiar los campos de entrada cuando el componente se monta
+        setCorreo('');
+        setPassword('');
+        setUsername('');
+        setError('');
+    }, []);
+
+
     const onRegisterPressed = async () => {
         try {
             console.log('kklkjlkjlk')
