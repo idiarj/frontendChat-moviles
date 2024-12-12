@@ -1,13 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, Animated, PanResponder, ImageBackground } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import users from './data/user'; 
 import { NavBar } from './components/navbar';
+import { Ionicons } from '@expo/vector-icons';
 import fondo from '../assets/fondoHB.png'; 
+import {fetchWrapper} from '../utils/fetchWrapper.js';
 
 const Home = () => {
-  const [profiles, setProfiles] = useState(users);
+  const [profiles, setProfiles] = useState([]);
   const swipe = new Animated.ValueXY();
+
+  const getInterestedIn = async () =>{
+    try {
+      const response = await fetchWrapper.get({
+        endpoint: '/user/getInterestedIn',
+      })
+      const data = await response.json();
+      // console.log(users)
+      console.log('a',data.data)
+      if(response.ok){
+        setProfiles(data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const setUpPosibleMatch = async () =>{
+    try {
+      
+    } catch (error) {
+      console.error(error);
+      
+    }
+  }
+
+  const handleLike = async ()=>{
+    try {
+      console.log('en el handler')
+      console.log(profiles[0]._id)
+      const response = await fetchWrapper.post({
+        endpoint: '/user/likeUser',
+        data: {
+          matchId: profiles[0]._id
+        }
+      })
+      const data = await response.json();
+      console.log(data)
+      if(response.ok){
+        console.log('Like guardado, tienes buenos gustos! (o no)')
+        swipeOut('right');
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    getInterestedIn();
+  }, [])
 
   const swipeResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -51,6 +103,17 @@ const Home = () => {
     }
 
     const profile = profiles[0];
+    console.log('profile')
+    console.log(profile._id)
+    console.log(profiles)
+
+    if(!profile){
+      return (
+        <View style={styles.noProfilesContainer}>
+          <Text style={styles.noProfilesText}>No hay más perfiles disponibles</Text>
+        </View>
+      );
+    }
 
     return (
       <Animated.View
@@ -70,10 +133,15 @@ const Home = () => {
           },
         ]}
       >
-        <Image source={{ uri: profile.image }} style={styles.image} />
+        {profile.image ? (
+              <Image source={{ uri: profile.image }} style={styles.image} />
+            ) : (
+              <Ionicons name="person-outline" size={375} color="black" style={styles.image} />
+        )}
+        
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{profile.name}</Text>
-          <Text style={styles.bio}>{profile.bio}</Text>
+          <Text style={styles.name}>{`${profile.firstName} ${profile.lastName}`}</Text>
+          <Text style={styles.bio}>{profile.description}</Text>
         </View>
       </Animated.View>
     );
@@ -97,7 +165,7 @@ const Home = () => {
               name="heart"
               size={40}
               color="green"
-              onPress={() => swipeOut('right')}
+              onPress={handleLike}
             />
           </View>
         </View>

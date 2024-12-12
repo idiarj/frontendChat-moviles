@@ -29,4 +29,8 @@ export default [
     image: 'https://randomuser.me/api/portraits/men/5.jpg',
     bio: 'Aspiring chef with a passion for spicy food.',
   },
+{  id: '6',
+  name: 'Victoria Acosta',
+  image: null,
+  bio: 'Aspiring chef with a passion for spicy food.',}
 ];

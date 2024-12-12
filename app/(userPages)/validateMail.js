@@ -36,7 +36,7 @@ const ValidateMail = () => {
                 const data = await response.json();
                 console.log(data);
                 setError('');
-                router.push('/forgotPassword');
+                router.navigate('/forgotPassword');
             } else {
                 console.error('error', response);
                 setError("Hubo un error, por favor intenta nuevamente.");  

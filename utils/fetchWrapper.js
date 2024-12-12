@@ -30,7 +30,7 @@ class FetchWrapper {
     async get({endpoint}) {
         try {
             //console.log('GET METHOD')
-            //console.log(this.baseUrl + endpoint)
+            console.log(this.baseUrl + endpoint)
             const response = await fetch(this.baseUrl + endpoint, {
                 method: 'GET',
                 // headers: {
@@ -86,7 +86,8 @@ class FetchWrapper {
 
     async patch({endpoint, data}){
         try{
-            //console.log(data)
+            console.log(data)
+            console.log(this.baseUrl + endpoint)
             const response = await fetch(this.baseUrl + endpoint, {
                 method: 'PATCH',
                 headers: {

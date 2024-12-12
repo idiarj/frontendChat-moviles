@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ImageBackground, StyleSheet, ScrollView, Image, Alert } from "react-native";
-import { Link, useNavigation } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import fondo from '../../assets/fondo.png';
@@ -10,15 +10,17 @@ const ForgotPassword = () => {
     const [pregunta, setPregunta] = useState("");
     const [respuesta, setRespuesta] = useState("");
     const [error, setError] = useState("");
-    const navigation = useNavigation();
+    const router = useRouter();
 
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
-                const response = await fetchWrapper.get('/user/security-question');
+                const response = await fetchWrapper.get({endpoint: '/user/getSecurityQuestion'});
                 const data = await response.json();
+                console.log(data)
                 if (response.ok) {
-                    setPregunta(data.pregunta);  
+                    setPregunta(data.question);
+                    setError("");
                 } else {
                     setError("Error al recuperar la pregunta de seguridad");
                 }
@@ -38,12 +40,15 @@ const ForgotPassword = () => {
         }
 
         try {
-            const response = await fetchWrapper.post("/user/validate-answer", { respuesta });
+            const response = await fetchWrapper.post({
+                endpoint: '/user/answerSecurityQuestion',
+                data: { answer: respuesta },
+            });
             const data = await response.json();
             if (response.ok) {
                 setError("");
                 Alert.alert("Verificación exitosa", "La respuesta es correcta.");
-                navigation.navigate("LoadingScreen", { loadingText: "Espera un momento, estamos terminando de registrarte.", newRoute: "notas" });
+                router.push('/resetPassword');
             } else {
                 setError(data.error || "Respuesta incorrecta");
             }

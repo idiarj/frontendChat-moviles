@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {View,Text,ImageBackground,StyleSheet,TouchableOpacity,Alert} from 'react-native';
-
+import { Link, useRouter } from 'expo-router';
+import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import LottieView from 'lottie-react-native';
-import { Link, useRouter } from 'expo-router';
+
 
 const Login = () => {
   const router = useRouter();
@@ -13,23 +14,26 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!username || !password) {
       setError('Por favor, completa todos los campos.');
       return;
     }
-
-    // Simulación de validación
-    if (username === 'admin' && password === '1234') {
-      setError('');
-      Alert.alert('Login exitoso', 'Bienvenido', [
-        {
-          text: 'Aceptar',
-          onPress: () => router.navigate('Home'),
-        },
-      ]);
-    } else {
-      setError('Credenciales incorrectas. Intenta nuevamente.');
+    try {
+      const response = await fetchWrapper.post({
+        endpoint: '/user/login',
+        data: { username, password },
+      });
+      const data = await response.json();
+      console.log(data)
+      if(!response.ok){
+        
+        setError(data.error);
+        return;
+      }
+      router.replace('/home')
+    } catch (error) {
+      console.error('error al iniciar sesion ', error);
     }
   };
 

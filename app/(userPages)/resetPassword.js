@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ImageBackground, StyleSheet, ScrollView, Alert } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import CustomInput from './../components/customInput';
 import CustomButton from './../components/customButton';
 import fondo from '../../assets/fondo.png';
@@ -10,8 +10,8 @@ const ResetPassword = () => {
     const [password, setNuevaContrasena] = useState("");
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
     const [error, setError] = useState("");
-
-    const onResetPasswordPressed = () => {
+    const router = useRouter();
+    const onResetPasswordPressed = async () => {
         // Validación de los campos
         if (!password || !confirmarContrasena) {
             setError("Por favor, ingresa ambas contraseñas.");
@@ -27,9 +27,22 @@ const ResetPassword = () => {
             setError("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
-
-        // Simulación de éxito en restablecimiento de contraseña
-        Alert.alert("Éxito", "Tu contraseña ha sido actualizada.");
+        try {
+            const response = await fetchWrapper.patch({
+                endpoint: '/user/changePassword',
+                data: { password },
+            })
+            if(response.ok){
+                const data = await response.json();
+                console.log(data);
+                setError('');
+                Alert.alert('Contraseña restablecida', 'La contraseña se ha restablecido correctamente');
+                router.push('/login');
+            }
+        } catch (error) {
+            console.error(error);
+            setError("Error al restablecer la contraseña. Intenta nuevamente.");
+        }
     };
 
     return (

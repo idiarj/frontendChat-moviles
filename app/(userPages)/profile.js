@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
   ImageBackground,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   Alert,
-  TextInput,
+  TextInput
 } from 'react-native';
-import fondo from '../../assets/fondoHB.png';
 import { NavBar } from '../components/navbar';
 import { Ionicons } from '@expo/vector-icons';
+import { fetchWrapper } from '../../utils/fetchWrapper.js';
+import { useRouter } from 'expo-router';
+import CustomButton from '../components/customButton.js';
+import fondo from '../../assets/fondoHB.png';
 
 // JSON de ejemplo con la información del usuario
 const userData = {
@@ -26,14 +29,21 @@ const userData = {
   image: 'https://randomuser.me/api/portraits/women/44.jpg', // Imagen inicial
 };
 
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
 export default function Profile() {
-  const [user, setUser] = useState(userData);
+  const [user, setUser] = useState({});
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isEditingUserInfo, setIsEditingUserInfo] = useState(false);
   const [description, setDescription] = useState(user.description);
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
   const [age, setAge] = useState(null);
+  const [reload, setReload] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Calcular edad
@@ -61,7 +71,7 @@ export default function Profile() {
     Alert.alert('Imagen actualizada', 'Tu foto de perfil ha sido cambiada.');
   };
 
-  const handleSaveDescription = () => {
+  const handleSaveDescription = async () => {
     if (description.length > 180) {
       Alert.alert(
         'Descripción demasiado larga',
@@ -69,15 +79,73 @@ export default function Profile() {
       );
       return;
     }
-    setUser({ ...user, description });
-    setIsEditingDescription(false);
-    Alert.alert('Descripción actualizada', 'Tu descripción ha sido guardada.');
+    try {
+
+      const response = await fetchWrapper.patch({
+        endpoint: '/user/editDescription',
+        data: { description },
+      })
+      const data = await response.json();
+      console.log(data)
+      if(response.ok){
+        setIsEditingDescription(false);
+        Alert.alert('Descripción actualizada', 'Tu descripción ha sido guardada.');
+        setReload(!reload);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleSaveUserInfo = () => {
-    setUser({ ...user, username, email });
-    setIsEditingUserInfo(false);
-    Alert.alert('Información de usuario actualizada', 'Cambios guardados.');
+  const getUserInfo = async () =>{
+    try {
+      const response = await fetchWrapper.get({endpoint: '/user/getUser'});
+      const data = await response.json();
+      console.log(data)
+      if(response.ok){
+        setUser(data.data);
+      }
+    } catch (error) {
+      console.error(error); 
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetchWrapper.post({
+        endpoint: '/user/logout',
+      })
+      const data = await response.json();
+      console.log(data)
+      if(response.ok){
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    getUserInfo();
+  }, [reload])
+
+  const handleSaveUserInfo = async () => {
+    try {
+      const response = await fetchWrapper.put({
+        endpoint: '/user/updateAccount',
+        data: { username, email }
+      })
+      
+
+      if(response.ok){
+        setIsEditingUserInfo(false);
+        Alert.alert('Información de usuario actualizada', 'Cambios guardados.');
+        setReload(!reload);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   return (
@@ -87,20 +155,24 @@ export default function Profile() {
         <View style={styles.profileSection}>
           {/* Imagen de perfil */}
           <View style={styles.imageContainer}>
-            <Image source={{ uri: user.image }} style={styles.profileImage} />
-            <TouchableOpacity
+            {user.image ? (
+              <Image source={{ uri: user.image }} style={styles.profileImage} />
+            ) : (
+              <Ionicons name="person-outline" size={60} color="black" />
+            )}
+            <Pressable
               style={styles.editIconContainer}
               onPress={handleImageChange}
             >
               <Ionicons name="camera" size={20} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Información personal (no editable) */}
           <Text style={styles.title}>Perfil</Text>
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              <Text style={styles.boldText}>Nombre:</Text> {user.name}
+              <Text style={styles.boldText}>Nombre:</Text> {user.firstName}
             </Text>
             <Text style={styles.infoText}>
               <Text style={styles.boldText}>Apellido:</Text> {user.lastName}
@@ -110,7 +182,7 @@ export default function Profile() {
             </Text>
             <Text style={styles.infoText}>
               <Text style={styles.boldText}>Fecha de nacimiento:</Text>{' '}
-              {user.birthDate}
+              {formatDate(user.birthDate)}
             </Text>
             <Text style={styles.infoText}>
               <Text style={styles.boldText}>Edad:</Text> {age} años
@@ -124,25 +196,26 @@ export default function Profile() {
               <>
                 <TextInput
                   style={styles.textInput}
-                  value={description}
+                  value={userdescription}
                   onChangeText={setDescription}
                   maxLength={180}
+                  placeholder={'Escribe algo sobre ti...'}
                 />
-                <TouchableOpacity
+                <Pressable
                   style={styles.saveButton}
                   onPress={handleSaveDescription}
                 >
                   <Text style={styles.saveButtonText}>Guardar</Text>
-                </TouchableOpacity>
+                </Pressable>
               </>
             ) : (
               <View style={styles.row}>
                 <Text style={styles.infoText}>{user.description}</Text>
-                <TouchableOpacity
+                <Pressable
                   onPress={() => setIsEditingDescription(true)}
                 >
                   <Ionicons name="pencil" size={20} color="#741d1d" />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             )}
           </View>
@@ -155,21 +228,21 @@ export default function Profile() {
                 <Text style={styles.boldText}>Usuario:</Text>
                 <TextInput
                   style={styles.textInput}
-                  value={username}
+                  value={user.username}
                   onChangeText={setUsername}
                 />
                 <Text style={styles.boldText}>Correo:</Text>
                 <TextInput
                   style={styles.textInput}
-                  value={email}
+                  value={user.email}
                   onChangeText={setEmail}
                 />
-                <TouchableOpacity
+                <Pressable
                   style={styles.saveButton}
                   onPress={handleSaveUserInfo}
                 >
                   <Text style={styles.saveButtonText}>Guardar</Text>
-                </TouchableOpacity>
+                </Pressable>
               </>
             ) : (
               <>
@@ -177,26 +250,32 @@ export default function Profile() {
                   <Text style={styles.infoText}>
                     <Text style={styles.boldText}>Usuario:</Text> {user.username}
                   </Text>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => setIsEditingUserInfo(true)}
                   >
                     <Ionicons name="pencil" size={20} color="#741d1d" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.infoText}>
                     <Text style={styles.boldText}>Correo:</Text> {user.email}
                   </Text>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => setIsEditingUserInfo(true)}
                   >
                     <Ionicons name="pencil" size={20} color="#741d1d" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </>
             )}
           </View>
         </View>
+        <CustomButton
+          text="Cerrar Sesión"
+          bgColor="#741d1d" // Color de fondo rojo
+          fgColor="#ffffff" // Color de texto blanco
+          onPress={handleLogout}
+        />
       </ScrollView>
       <NavBar />
     </ImageBackground>
