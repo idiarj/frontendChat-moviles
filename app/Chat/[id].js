@@ -1,26 +1,65 @@
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import React, { useState, useEffect } from 'react'; 
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native'; 
-import { useRouter, useLocalSearchParams } from 'expo-router'; 
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { fetchWrapper } from '../../utils/fetchWrapper.js'; 
+import { io } from 'socket.io-client';
  
 export default function Chat() { 
   const router = useRouter(); 
   const { id } = useLocalSearchParams();  
   const [messages, setMessages] = useState([]); 
   const [input, setInput] = useState(''); 
+  const socket = io('http://192.168.0.103:3000'); // Asegúrate de que la URL sea correcta
  
   useEffect(() => { 
-    // Aquí puedes cargar los mensajes del chat usando el id 
-  }, [id]); 
+    // Conectar al servidor de Socket.IO
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      socket.emit('joinRoom', { roomId: id });
+    });
+
+    // Escuchar mensajes entrantes
+    socket.on('receiveMessage', (message) => {
+      console.log(message)
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    // Desconectar del servidor cuando el componente se desmonte
+    return () => {
+      socket.disconnect();
+    };
+  }, [id]);
+
+  const getMessages = async () => {
+    try {
+      const response = await fetchWrapper.get({ endpoint: `/getMessages/${id}` });
+      const data = await response.json();
+      if(response.ok){
+        setMessages(data.messages);
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
  
   const sendMessage = () => { 
     if (input.trim() === '') return; 
  
     const newMessage = { 
-      id: Math.random().toString(), 
+      _id: uuidv4(), // Generar un ID único para el mensaje
+      roomId: id,
       text: input, 
       sender: 'me', 
     }; 
-    setMessages([...messages, newMessage]); 
+ 
+    // Enviar mensaje al servidor
+    console.log(newMessage)
+    socket.emit('sendMessage', newMessage.text);
+
+    // Agregar mensaje a la lista localmente
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInput(''); 
   }; 
  
@@ -34,7 +73,7 @@ export default function Chat() {
       </View> 
       <FlatList 
         data={messages} 
-        keyExtractor={(item) => item.id} 
+        keyExtractor={(item) => item._id} 
         renderItem={({ item }) => ( 
           <View 
             style={[ 
