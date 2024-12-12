@@ -1,9 +1,9 @@
-import {useState, useCallback} from 'react';
+import { useState, useCallback } from 'react';
 import { useFocusEffect, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Image, FlatList, TextInput, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, Image, FlatList, TextInput, StyleSheet, ImageBackground, Pressable } from 'react-native';
 import NavBar from '../components/navbar';
-import {fetchWrapper} from '../../utils/fetchWrapper.js';
+import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import fondo from '../../assets/fondoHB.png';
 
 const ChatScreen = () => {
@@ -14,54 +14,36 @@ const ChatScreen = () => {
     try {
       const response = await fetchWrapper.get({
         endpoint: '/user/getMatches'
-      })
-      const {data} = await response.json();
-      //console.log(response)
-      if(response.ok){
-        // console.log(data)
+      });
+      const { data } = await response.json();
+      if (response.ok) {
         setMaches(data);
       }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const getChats = async () => {
     try {
       const response = await fetchWrapper.get({
         endpoint: '/user/getChats'
-      })
-      console.log(response.ok)
-      const {data} = await response.json();
-      // console.log(data)
-      if(response.ok){
+      });
+      const { data } = await response.json();
+      if (response.ok) {
         setChats(data);
       }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
   useFocusEffect(
-    useCallback(()=>{
+    useCallback(() => {
       getMatches();
       getChats();
     }, [])
-  )
-  const newMatches = [
-    { id: '1', name: 'Erica', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
-    { id: '2', name: 'Kayleigh', image: 'https://randomuser.me/api/portraits/women/2.jpg' },
-    { id: '3', name: 'Claire', image: 'https://randomuser.me/api/portraits/women/3.jpg' },
-    { id: '4', name: 'Sophie', image: 'https://randomuser.me/api/portraits/women/4.jpg' },
-    { id: '5', name: 'Lily', image: 'https://randomuser.me/api/portraits/women/5.jpg' },
-  ];
-
-  const messages = [
-    { id: '1', name: 'Blake', message: 'I’ll be flying to Italy tonight...', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-    { id: '2', name: 'Rose', message: 'How do you know Jon?', image: 'https://randomuser.me/api/portraits/women/4.jpg' },
-    { id: '3', name: 'Nicky', message: "Yeah! I'm down to hangout Sunday...", image: 'https://randomuser.me/api/portraits/men/2.jpg' },
-    { id: '4', name: 'Rachel', message: 'I love that coffee shop', image: 'https://randomuser.me/api/portraits/women/5.jpg' },
-    { id: '5', name: 'Joanna', message: 'Your dog is so cute', image: 'https://randomuser.me/api/portraits/women/6.jpg' },
-  ];
+  );
 
   return (
     <ImageBackground source={fondo} style={styles.background}>
@@ -74,10 +56,10 @@ const ChatScreen = () => {
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <View style={styles.matchContainer}>
-              {item.image ? (
-              <Image source={{ uri: item.image }} style={styles.image} />
+                {item.image ? (
+                  <Image source={{ uri: item.image }} style={styles.image} />
                 ) : (
-              <Ionicons name="person-outline" size={40} color="black" style={styles.image} />
+                  <Ionicons name="person-outline" size={40} color="black" style={styles.image} />
                 )}
                 <Text style={styles.matchName}>{item.firstName}</Text>
               </View>
@@ -93,27 +75,25 @@ const ChatScreen = () => {
           data={chats}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => {
-            console.log('item', item); // Esto imprimirá cada item en la consola
             const user1FirstName = item.id_user1 ? item.id_user1.firstName : '';
             const user2FirstName = item.id_user2 ? item.id_user2.firstName : '';
             return (
-                <>
-                <Link href={`/Chat/${item.id}`}>
+              <Pressable onPress={() => {
+                console.log('presionado');
+                router.push('/profile');
+              }}>
                 <View style={styles.messageContainer}>
-                {item.image ? (
-                  <Image source={{ uri: item.image }} style={styles.image} />
-                ) : (
-                  <Ionicons name="person-outline" size={35} color="black" style={styles.image} />
-                )}
-                <View style={styles.messageTextContainer}>
-                  <Text style={styles.messageName}>{user1FirstName || user2FirstName}</Text>
-                  <Text style={styles.messageText}>{item.message ? item.message : `No hay mensajes entre tu y ${user1FirstName || user2FirstName}`}</Text>
+                  {item.image ? (
+                    <Image source={{ uri: item.image }} style={styles.image} />
+                  ) : (
+                    <Ionicons name="person-outline" size={35} color="black" style={styles.image} />
+                  )}
+                  <View style={styles.messageTextContainer}>
+                    <Text style={styles.messageName}>{user1FirstName || user2FirstName}</Text>
+                    <Text style={styles.messageText}>{item.message ? item.message : `No hay mensajes entre tu y ${user1FirstName || user2FirstName}`}</Text>
+                  </View>
                 </View>
-              </View>
-                </Link>
-                </>
-                
-
+              </Pressable>
             );
           }}
         />
@@ -187,7 +167,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
-
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 4,
+    borderWidth: 2,
+    borderColor: '#612222',
+  },
 });
 
 export default ChatScreen;
