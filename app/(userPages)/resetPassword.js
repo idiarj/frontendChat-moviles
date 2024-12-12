@@ -74,7 +74,7 @@ const ResetPassword = () => {
                         <CustomButton text="Restablecer Contraseña" onPress={onResetPasswordPressed} />
                     </View>
 
-                    <Link href="/login" style={styles.signInLink}>Ir a login</Link>
+                    <Link href="/login" replace style={styles.signInLink}>Ir a login</Link>
                 </View>
             </ScrollView>
         </ImageBackground>

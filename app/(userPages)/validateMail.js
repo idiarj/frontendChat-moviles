@@ -63,7 +63,7 @@ const ValidateMail = () => {
 
                         <CustomButton text="Enviar" onPress={onSubmitPressed} />
                     </View>
-                    <Link href="/login" style={styles.signInLink}>Volver al login</Link>
+                    <Link href="/login" replace style={styles.signInLink}>Volver al login</Link>
                 </View>
             </ScrollView>
         </ImageBackground>

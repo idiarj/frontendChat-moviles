@@ -64,7 +64,7 @@ const Login = () => {
 
         <CustomButton text="Iniciar Sesión" onPress={handleLogin} />
 
-        <Link href="/validateMail">
+        <Link href="/validateMail" replace>
             <Text style={styles.linkText}>
                 ¿Olvidaste tu contraseña? <Text style={styles.link}>Ingresa aquí</Text>
             </Text>

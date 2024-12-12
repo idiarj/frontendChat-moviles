@@ -10,7 +10,7 @@ import AnwersQuestion from './app/(userPages)/answerQuestion';
 import Register from './app/(userPages)/register';
 import ForgotPassword from './app/(userPages)/forgotPassword';
 import Home from './app/home';
-import Chat from './app/Chat';
+import Chat from './app/Chat/index';
 import ValidateMail from './app/(userPages)/validateMail';
 import { StyleSheet, SafeAreaView } from 'react-native';
 
