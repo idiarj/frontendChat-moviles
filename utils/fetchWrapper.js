@@ -1,14 +1,16 @@
 class FetchWrapper {
     constructor(baseUrl) {
-        this.baseUrl = baseUrl ? baseUrl : 'http://localhost:3000';
+        this.baseUrl = baseUrl ? baseUrl : 'http://192.168.0.103:3000';
         //console.log(this.baseUrl);
     }
 
-    async post(endpoint, data) {
+    async post({endpoint, data}) {
         try {
             //console.log('POST METHOD')
+            console.log(endpoint)
             const url = this.baseUrl + endpoint
-            //console.log(url)
+            console.log(data)
+            console.log(url)
             const response = await fetch(this.baseUrl + endpoint, {
                 method: 'POST',
                 headers: {
@@ -25,7 +27,7 @@ class FetchWrapper {
         }
     }
 
-    async get(endpoint) {
+    async get({endpoint}) {
         try {
             //console.log('GET METHOD')
             //console.log(this.baseUrl + endpoint)
@@ -45,7 +47,7 @@ class FetchWrapper {
         }
     }
 
-    async put(endpoint, data) {
+    async put({endpoint, data}) {
         try {
             const response = await fetch(this.baseUrl + endpoint, {
                 method: 'PUT',
@@ -63,7 +65,7 @@ class FetchWrapper {
         }
     }
 
-    async delete(endpoint) {
+    async delete({endpoint}) {
         try{
             //console.log('DELETE METHOD')
             //console.log(this.baseUrl + endpoint)
@@ -82,7 +84,7 @@ class FetchWrapper {
         }
     }
 
-    async patch(endpoint, data){
+    async patch({endpoint, data}){
         try{
             //console.log(data)
             const response = await fetch(this.baseUrl + endpoint, {
@@ -104,4 +106,6 @@ class FetchWrapper {
 
 
 
-export const fetchWrapper = new FetchWrapper();
+module.exports = {
+    fetchWrapper: new FetchWrapper('http://192.168.0.103:3000')
+};

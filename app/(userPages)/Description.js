@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   ImageBackground,
   Alert,
 } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import fondo from '../../assets/fondo.png';
 import CustomButton from '../components/customButton';
 
 const Description = () => {
+  const router = useRouter();
+  const { email, password, username, firstName, lastName, gender, birthDate } = useLocalSearchParams();
+  console.log(email, password, username, firstName, lastName, gender, birthDate);
   const [description, setDescription] = useState('');
   const [interestedIn, setInterestedIn] = useState(null); // Estado para género de interés
   const [error, setError] = useState('');
 
-  const handleSave = () => {
-    if (!description || !interestedIn) {
-      setError('Por favor, llena todos los campos.');
-      return;
+  const handleSave = async () => {
+    try {
+      const response = await fetchWrapper.post({endpoint: '/user/register',
+        data: {
+          username,
+          password,
+          email,
+          firstName,
+          lastName,
+          birthDate,
+          gender,
+          description,
+          interestedIn}
+        })
+        console.log(response.ok)
+        if(response.ok){
+          console.log('Registro de usuario exitoso.')
+          router.push({
+            pathname: '/answerQuestion',
+            params: { email }
+          })
+        }
+    } catch (error) {
+      console.error(error);
     }
-
-    Alert.alert('Información guardada', `Descripción: ${description}\nInteresado en: ${interestedIn}`);
   };
 
   return (
@@ -41,7 +64,7 @@ const Description = () => {
 
         <Text style={styles.label}>¿Qué género te gustaría ver?</Text>
         <View style={styles.genderContainer}>
-          <TouchableOpacity
+          <Pressable
             style={[
               styles.genderButton,
               interestedIn === 'Hombre' && styles.genderSelected,
@@ -56,8 +79,8 @@ const Description = () => {
             >
               Hombre
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[
               styles.genderButton,
               interestedIn === 'Mujer' && styles.genderSelected,
@@ -72,8 +95,8 @@ const Description = () => {
             >
               Mujer
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[
               styles.genderButton,
               interestedIn === 'Ambos' && styles.genderSelected,
@@ -88,12 +111,12 @@ const Description = () => {
             >
               Ambos
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        <CustomButton text="Guardar" onPress={handleSave} />
+        <CustomButton text="Siguiente" onPress={handleSave} />
       </View>
     </ImageBackground>
   );

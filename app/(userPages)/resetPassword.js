@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import CustomInput from './../components/customInput';
 import CustomButton from './../components/customButton';
 import fondo from '../../assets/fondo.png';
+import {fetchWrapper} from "../../utils/fetchWrapper.js";
 
 const ResetPassword = () => {
     const [password, setNuevaContrasena] = useState("");

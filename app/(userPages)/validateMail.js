@@ -4,7 +4,7 @@ import fondo from '../../assets/fondo.png';
 import CustomInput from './../components/customInput';
 import CustomButton from './../components/customButton';
 import { Link, router } from 'expo-router';
-// import { fetchsito1 } from "../../utils/fetchMethod.js";
+import {fetchWrapper} from "../../utils/fetchWrapper.js";
 
 const ValidateMail = () => {
     const [email, setCorreo] = useState('');
@@ -26,20 +26,23 @@ const ValidateMail = () => {
 
         // Simulación de verificación de existencia del email
         try {
-            const response = await fetchsito1.post('/user/sendEmailRecovery', { email });
-            const data = await response.json();
-            console.log(data)
-            console.log(response.ok)
+            console.log('presionado')
+            const response = await fetchWrapper.post({
+                endpoint: '/user/sendEmailRecovery',
+                data: { email },
+            });
+
             if (response.ok) {
+                const data = await response.json();
+                console.log(data);
                 setError('');
-                router.push('anwersQuestion')
-                // Aquí redirigimos a la pantalla de cambio de contraseña
-                // Por ejemplo: router.push("/ChangePassword");
+                router.push('/forgotPassword');
             } else {
-                setError("El email ingresado no está registrado");
+                console.error('error', response);
+                setError("Hubo un error, por favor intenta nuevamente.");  
             }
         } catch (error) {
-            console.error(error);
+            console.error('error', error);
             setError("Error al verificar el email. Intenta nuevamente.");
         }
     };

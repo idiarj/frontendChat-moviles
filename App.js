@@ -20,7 +20,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Profile">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen 
           name="Login" 
           component={Login} 

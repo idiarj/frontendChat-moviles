@@ -3,7 +3,7 @@ import { View, Text, ImageBackground, StyleSheet, Alert, Image } from 'react-nat
 import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
-import { Link, router } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 // import { fetchsito1 } from '../../utils/fetchMethod';
 
 const Register = () => {
@@ -11,7 +11,7 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [Error, setError] = useState('');
     const [username, setUsername] = useState('');
-
+    const router = useRouter();
     const onRegisterPressed = async () => {
         try {
             console.log('kklkjlkjlk')
@@ -19,17 +19,10 @@ const Register = () => {
                 setError('Por favor, llena todos los campos');
                 return;
             }
-            // const response = await fetchsito1.post('/user/register', { username, email, password });
-            const data = await response.json();
-            console.log(data);
-            if (response.ok) {
-                router.push({
-                    pathname: 'register2',
-                    params: { email }
-                });
-            } else {
-                setError(data.error);
-            }
+            router.push({
+                pathname: '/infoUser',
+                params: { email, password, username },
+            });
         } catch (error) {
             console.error(error);
         }

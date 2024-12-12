@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter, useSearchParams } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function Chat() {
   const router = useRouter();
-  const { id, name } = useSearchParams(); 
+  const { id, name } = route.params; 
   const [messages, setMessages] = useState([
     { id: '1', text: 'Hola, ¿cómo estás?', sender: 'other' },
     { id: '2', text: 'Todo bien, ¿y tú?', sender: 'me' },

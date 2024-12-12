@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {View,Text,ImageBackground,StyleSheet,TouchableOpacity,Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+
 import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import LottieView from 'lottie-react-native';
-import { Link, router } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 
 const Login = () => {
-  const navigation = useNavigation();
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ const Login = () => {
       Alert.alert('Login exitoso', 'Bienvenido', [
         {
           text: 'Aceptar',
-          onPress: () => navigation.navigate('Home'),
+          onPress: () => router.navigate('Home'),
         },
       ]);
     } else {
@@ -66,7 +66,7 @@ const Login = () => {
             </Text>
         </Link>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+        <TouchableOpacity onPress={() => router.navigate('register')}>
           <Text style={styles.linkText}>
             ¿No tienes cuenta?{' '}
             <Text style={styles.link}>Regístrate aquí</Text>

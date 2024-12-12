@@ -4,7 +4,7 @@ import { Link, useLocalSearchParams, router } from "expo-router";
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import fondo from '../../assets/fondo.png';
-// import { fetchsito1 } from '../../utils/fetchMethod';
+import { fetchWrapper } from "../../utils/fetchWrapper.js";
 
 const AnwersQuestion = () => {
     const [question, setQuestion] = useState("");
@@ -20,7 +20,10 @@ const AnwersQuestion = () => {
                 return;
             }
             console.log(question, answer);
-            const response = await fetchsito1.post("/user/setSecurityQuestion", { email, question, answer });
+            const response = await fetchWrapper.post({
+                endpoint: "/user/setSecurityQuestion",
+                data: { email, question, answer },
+            });
             const data = await response.json();
             if (response.ok) {
                 router.navigate("login");

@@ -10,14 +10,16 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import fondo from '../../assets/fondo.png';
 
 const InfoUser = () => {
-  const navigation = useNavigation();
-  const [name, setName] = useState('');
+  const router = useRouter();
+  const {email, password, username} = useLocalSearchParams();
+  // console.log(email, password, username);
+  const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDate, setBirthDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -39,7 +41,7 @@ const InfoUser = () => {
 
   const onNextPressed = async () => {
     try {
-      if (!name || !lastName || !birthDate || !gender) {
+      if (!firstName || !lastName || !birthDate || !gender) {
         setError('Por favor, llena todos los campos y selecciona un género');
         return;
       }
@@ -52,7 +54,7 @@ const InfoUser = () => {
 
       console.log(
         'Nombre:',
-        name,
+        firstName,
         'Apellido:',
         lastName,
         'Fecha de nacimiento:',
@@ -62,18 +64,11 @@ const InfoUser = () => {
         'Género:',
         gender
       );
-
-      // Simulación de validación (reemplazar con fetch)
-      const response = { ok: true }; // Simulación
-      if (response.ok) {
-        Alert.alert(
-          'Registro exitoso',
-          `Has avanzado al siguiente paso. Tu edad: ${age} años`
-        );
-        navigation.navigate('NextStep', { name, lastName, birthDate, gender, age });
-      } else {
-        setError('Error al registrar. Intenta nuevamente.');
-      }
+      console.log({ firstName, lastName, birthDate, gender, username, email, password })
+      router.push({
+        pathname: '/Description',
+        params: { firstName, lastName, birthDate, gender, username, email, password }
+      })
     } catch (error) {
       console.error('Error al registrar:', error);
       setError('Ocurrió un error inesperado. Intenta nuevamente.');
@@ -83,7 +78,7 @@ const InfoUser = () => {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.container}>
-        <CustomInput value={name} setvalue={setName} placeholder="Nombre" />
+        <CustomInput value={firstName} setvalue={setFirstName} placeholder="Nombre" />
         <CustomInput value={lastName} setvalue={setLastName} placeholder="Apellido" />
 
         {/* Fecha de nacimiento con Modal */}
@@ -168,7 +163,7 @@ const InfoUser = () => {
 
         <Text
           style={styles.signInLink}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => router.push('/login')}
         >
           Volver al login
         </Text>
