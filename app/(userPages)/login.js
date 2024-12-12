@@ -5,7 +5,7 @@ import fondo from '../../assets/fondo.png';
 import CustomInput from '../components/customInput';
 import CustomButton from '../components/customButton';
 import LottieView from 'lottie-react-native';
-
+import { Link, router } from 'expo-router';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -59,6 +59,12 @@ const Login = () => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <CustomButton text="Iniciar Sesión" onPress={handleLogin} />
+
+        <Link href="/validateMail">
+            <Text style={styles.linkText}>
+                ¿Olvidaste tu contraseña? <Text style={styles.link}>Ingresa aquí</Text>
+            </Text>
+        </Link>
 
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
           <Text style={styles.linkText}>

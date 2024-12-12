@@ -2,13 +2,17 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/(userPages)/login';
-import Register from './app/(userPages)/register';
+import InfoUser from './app/(userPages)/infoUser';
 import Profile from './app/(userPages)/profile';
 import Description from './app/(userPages)/Description';
+import ResetPassword from './app/(userPages)/resetPassword';
+import AnwersQuestion from './app/(userPages)/answerQuestion';
+import Register from './app/(userPages)/register';
+import ForgotPassword from './app/(userPages)/forgotPassword';
 import Home from './app/home';
 import Chat from './app/Chat';
+import ValidateMail from './app/(userPages)/validateMail';
 import { StyleSheet, SafeAreaView } from 'react-native';
-
 
 const Stack = createStackNavigator();
 
@@ -16,7 +20,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Description">
+      <Stack.Navigator initialRouteName="Profile">
         <Stack.Screen 
           name="Login" 
           component={Login} 
@@ -53,6 +57,37 @@ export default function App() {
         options={{ headerShown: false }} 
 
       />
+      <Stack.Screen 
+        name="ValidateMail" 
+        component={ ValidateMail } 
+        options={{ headerShown: false }}
+
+      />
+      <Stack.Screen 
+        name="ResetPassword" 
+        component={ ResetPassword } 
+        options={{ headerShown: false }}   
+
+      />
+      <Stack.Screen 
+        name="AnwersQuestion" 
+        component={ AnwersQuestion } 
+        options={{ headerShown: false }}
+
+      />
+      <Stack.Screen 
+        name="InfoUser" 
+        component={ InfoUser } 
+        options={{ headerShown: false }}
+
+      />
+
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword}
+        options={{ headerShown: false }}
+      />
+
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaView>
@@ -62,5 +97,6 @@ export default function App() {
 const styles = StyleSheet.create({  
   container: {
     flex: 1,
+
   },
 });

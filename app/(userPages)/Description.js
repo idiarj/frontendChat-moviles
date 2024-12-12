@@ -28,8 +28,6 @@ const Description = () => {
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <View style={styles.container}>
-        <Text style={styles.title}>Registro</Text>
-
         <Text style={styles.label}>Agrega una pequeña descripción sobre ti:</Text>
         <TextInput
           style={styles.textInput}
