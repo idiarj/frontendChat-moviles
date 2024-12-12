@@ -110,5 +110,5 @@ class FetchWrapper {
 
 
 module.exports = {
-    fetchWrapper: new FetchWrapper('http://192.168.0.103:3000')
+    fetchWrapper: new FetchWrapper('https://backendchat-moviles.onrender.com')
 };

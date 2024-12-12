@@ -11,7 +11,7 @@ export default function Chat() {
   const { id } = useLocalSearchParams();  
   const [messages, setMessages] = useState([]); 
   const [input, setInput] = useState(''); 
-  const socket = io('http://192.168.0.103:3000'); // Asegúrate de que la URL sea correcta
+  const socket = io('https://backendchat-moviles.onrender.com'); // Asegúrate de que la URL sea correcta
  
   useEffect(() => { 
     // Conectar al servidor de Socket.IO
