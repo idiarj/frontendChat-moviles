@@ -1,10 +1,10 @@
 import {useState, useCallback} from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Image, FlatList, TextInput, StyleSheet, ImageBackground } from 'react-native';
-import NavBar from './components/navbar';
-import {fetchWrapper} from '../utils/fetchWrapper.js';
-import fondo from '../assets/fondoHB.png';
+import NavBar from '../components/navbar';
+import {fetchWrapper} from '../../utils/fetchWrapper.js';
+import fondo from '../../assets/fondoHB.png';
 
 const ChatScreen = () => {
   const [matches, setMaches] = useState([]);
@@ -91,13 +91,15 @@ const ChatScreen = () => {
         <Text style={styles.title}>Mensajes</Text>
         <FlatList
           data={chats}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => {
             console.log('item', item); // Esto imprimirá cada item en la consola
             const user1FirstName = item.id_user1 ? item.id_user1.firstName : '';
             const user2FirstName = item.id_user2 ? item.id_user2.firstName : '';
             return (
-              <View style={styles.messageContainer}>
+                <>
+                <Link href={`/Chat/${item.id}`}>
+                <View style={styles.messageContainer}>
                 {item.image ? (
                   <Image source={{ uri: item.image }} style={styles.image} />
                 ) : (
@@ -108,6 +110,10 @@ const ChatScreen = () => {
                   <Text style={styles.messageText}>{item.message ? item.message : `No hay mensajes entre tu y ${user1FirstName || user2FirstName}`}</Text>
                 </View>
               </View>
+                </Link>
+                </>
+                
+
             );
           }}
         />
