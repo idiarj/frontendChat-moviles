@@ -1,56 +1,76 @@
-import { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
+  ImageBackground,
   StyleSheet,
+  ScrollView,
+  Image,
   TextInput,
   Pressable,
-  ImageBackground,
   Alert,
-} from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { fetchWrapper } from '../../utils/fetchWrapper.js';
-import fondo from '../../assets/fondo.png';
-import CustomButton from '../components/customButton';
+  TouchableOpacity,
+} from "react-native";
+import { Link, useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker"; // Importa Image Picker
+import CustomButton from "./../components/customButton";
+import fondo from "../../assets/fondo.png";
 
 const Description = () => {
   const router = useRouter();
-  const { email, password, username, firstName, lastName, gender, birthDate } = useLocalSearchParams();
-  console.log(email, password, username, firstName, lastName, gender, birthDate);
-  const [description, setDescription] = useState('');
-  const [interestedIn, setInterestedIn] = useState(null); // Estado para género de interés
-  const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null); // Imagen seleccionada
+  const [description, setDescription] = useState("");
+  const [interestedIn, setInterestedIn] = useState(null); 
+  const [error, setError] = useState("");
+
+  // Maneja la selección de imágenes desde la galería
+  const handlePickImage = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert("Permiso denegado", "Se necesita acceso a la galería para continuar.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri); // Actualiza la imagen seleccionada
+      }
+    } catch (error) {
+      console.error("Error seleccionando imagen:", error);
+      Alert.alert("Error", "Ocurrió un problema seleccionando la imagen.");
+    }
+  };
 
   const handleSave = async () => {
-    try {
-      const response = await fetchWrapper.post({endpoint: '/user/register',
-        data: {
-          username,
-          password,
-          email,
-          firstName,
-          lastName,
-          birthDate,
-          gender,
-          description,
-          interestedIn}
-        })
-        console.log(response.ok)
-        if(response.ok){
-          console.log('Registro de usuario exitoso.')
-          router.push({
-            pathname: '/answerQuestion',
-            params: { email }
-          })
-        }
-    } catch (error) {
-      console.error(error);
+    if (!description || !interestedIn || !selectedImage) {
+      setError("Por favor completa todos los campos y selecciona una imagen.");
+      return;
     }
+    // Aquí puedes añadir la lógica para guardar la información
+    console.log("Descripción:", description);
+    console.log("Interesado en:", interestedIn);
+    console.log("Imagen seleccionada:", selectedImage);
+    Alert.alert("Datos guardados", "Tu información ha sido actualizada correctamente.");
+    router.push("/nextStep");
   };
 
   return (
     <ImageBackground source={fondo} style={styles.background}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.label}>Sube tu foto:</Text>
+        <TouchableOpacity style={styles.imageButton} onPress={handlePickImage}>
+          {selectedImage ? (
+            <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+          ) : (
+            <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
+          )}
+        </TouchableOpacity>
+
         <Text style={styles.label}>Agrega una pequeña descripción sobre ti:</Text>
         <TextInput
           style={styles.textInput}
@@ -67,14 +87,14 @@ const Description = () => {
           <Pressable
             style={[
               styles.genderButton,
-              interestedIn === 'Hombre' && styles.genderSelected,
+              interestedIn === "Hombre" && styles.genderSelected,
             ]}
-            onPress={() => setInterestedIn('Hombre')}
+            onPress={() => setInterestedIn("Hombre")}
           >
             <Text
               style={[
                 styles.genderText,
-                interestedIn === 'Hombre' && styles.genderTextSelected,
+                interestedIn === "Hombre" && styles.genderTextSelected,
               ]}
             >
               Hombre
@@ -83,14 +103,14 @@ const Description = () => {
           <Pressable
             style={[
               styles.genderButton,
-              interestedIn === 'Mujer' && styles.genderSelected,
+              interestedIn === "Mujer" && styles.genderSelected,
             ]}
-            onPress={() => setInterestedIn('Mujer')}
+            onPress={() => setInterestedIn("Mujer")}
           >
             <Text
               style={[
                 styles.genderText,
-                interestedIn === 'Mujer' && styles.genderTextSelected,
+                interestedIn === "Mujer" && styles.genderTextSelected,
               ]}
             >
               Mujer
@@ -99,14 +119,14 @@ const Description = () => {
           <Pressable
             style={[
               styles.genderButton,
-              interestedIn === 'Ambos' && styles.genderSelected,
+              interestedIn === "Ambos" && styles.genderSelected,
             ]}
-            onPress={() => setInterestedIn('Ambos')}
+            onPress={() => setInterestedIn("Ambos")}
           >
             <Text
               style={[
                 styles.genderText,
-                interestedIn === 'Ambos' && styles.genderTextSelected,
+                interestedIn === "Ambos" && styles.genderTextSelected,
               ]}
             >
               Ambos
@@ -117,7 +137,7 @@ const Description = () => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <CustomButton text="Siguiente" onPress={handleSave} />
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -125,72 +145,87 @@ const Description = () => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
-    width: '85%',
-    alignItems: 'center',
+    width: "85%",
+    alignItems: "center",
     borderRadius: 10,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Fondo semi-transparente
-  },
-  title: {
-    color: 'white',
-    fontSize: 25,
-    marginBottom: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    marginTop: 160,
   },
   label: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
     marginBottom: 10,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
+  },
+  imageButton: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  imageButtonText: {
+    color: "#a56969",
+    textAlign: "center",
+  },
+  imagePreview: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   textInput: {
-    width: '100%',
-    height: 80,
+    width: 300,
+    height: 50,
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: "white",
     borderRadius: 5,
     padding: 10,
-    color: 'white',
+    color: "white",
     marginBottom: 10,
   },
   charCount: {
-    alignSelf: 'flex-end',
-    color: '#a56969',
+    alignSelf: "flex-end",
+    color: "#a56969",
     fontSize: 12,
     marginBottom: 20,
   },
   genderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginBottom: 20,
   },
   genderButton: {
-    width: '30%',
+    width: "30%",
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'white',
-    alignItems: 'center',
+    borderColor: "white",
+    alignItems: "center",
   },
   genderSelected: {
-    backgroundColor: 'white',
-    borderColor: 'white',
+    backgroundColor: "white",
+    borderColor: "white",
   },
   genderText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
   genderTextSelected: {
-    color: '#3a0707', // Cambia a negro cuando está seleccionado
+    color: "#3a0707",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginTop: 10,
   },
 });
 
 export default Description;
+ 
