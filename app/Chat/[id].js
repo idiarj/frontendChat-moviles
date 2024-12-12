@@ -5,10 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 export default function Chat() { 
   const router = useRouter(); 
   const { id } = useLocalSearchParams();  
-  const [messages, setMessages] = useState([ 
-    { id: '1', text: 'Hola, ¿cómo estás?', sender: 'other' }, 
-    { id: '2', text: 'Todo bien, ¿y tú?', sender: 'me' }, 
-  ]); 
+  const [messages, setMessages] = useState([]); 
   const [input, setInput] = useState(''); 
  
   useEffect(() => { 

@@ -70,8 +70,8 @@ const ChatScreen = () => {
             renderItem={({ item }) => ( 
               <Pressable onPress={() => router.push(`/Chat/${item?._id}`)}> 
                 <View style={styles.matchContainer}> 
-                  {item.image ? ( 
-                    <Image source={{ uri: item.image }} style={styles.image} /> 
+                  {item.profilePicture ? ( 
+                    <Image source={{ uri: item.profilePicture }} style={styles.image} /> 
                   ) : ( 
                     <Ionicons name="person-outline" size={40} color="black" style={styles.image} /> 
                   )} 
@@ -92,13 +92,18 @@ const ChatScreen = () => {
           renderItem={({ item }) => { 
             const user1FirstName = item.id_user1 ? item.id_user1.firstName : ''; 
             const user2FirstName = item.id_user2 ? item.id_user2.firstName : ''; 
+            const user1ProfilePicture = item.id_user1 ? item.id_user1.profilePicture : '';
+            const user2ProfilePicture = item.id_user2 ? item.id_user2.profilePicture : '';
+            const uri = user1ProfilePicture || user2ProfilePicture;
+            console.log('AAAAAAAA',item)
             return ( 
               <Pressable onPress={() => { 
+                
                 router.push(`/Chat/${item?._id}`); 
               }}> 
                 <View style={styles.messageContainer}> 
-                  {item.image ? ( 
-                    <Image source={{ uri: item.image }} style={styles.image} /> 
+                  {(user1FirstName || user2ProfilePicture) ? ( 
+                    <Image source={{ uri }} style={styles.image} /> 
                   ) : ( 
                     <Ionicons name="person-outline" size={35} color="black" style={styles.image} /> 
                   )} 
