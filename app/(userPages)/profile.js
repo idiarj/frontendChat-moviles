@@ -13,9 +13,11 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import NavBar from '../components/navbar';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { fetchWrapper } from '../../utils/fetchWrapper.js';
 import { useRouter } from 'expo-router';
 import CustomButton from '../components/customButton.js';
+import * as ImagePicker from 'expo-image-picker'; 
 import fondo from '../../assets/fondoHB.png';
 
 // JSON de ejemplo con la información del usuario
@@ -153,6 +155,32 @@ export default function Profile() {
 
   };
 
+  const handlePickImage = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Permiso denegado', 'Se necesita acceso a la galería para continuar.');
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+  
+      if (!result.canceled) {
+        setUser({
+          ...user,
+          image: result.assets[0].uri,
+        });
+        Alert.alert('Imagen actualizada', 'Tu foto de perfil ha sido cambiada.');
+      }
+    } catch (error) {
+      console.error('Error seleccionando imagen:', error);
+      Alert.alert('Error', 'Ocurrió un problema seleccionando la imagen.');
+    }
+  };
+  
   return (
     <ImageBackground source={fondo} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -165,12 +193,11 @@ export default function Profile() {
             ) : (
               <Ionicons name="person-outline" size={60} color="black" />
             )}
-            <Pressable
-              style={styles.editIconContainer}
-              onPress={handleImageChange}
-            >
-              <Ionicons name="camera" size={20} color="white" />
-            </Pressable>
+            
+      <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
+        <MaterialIcons name="add-a-photo" size={24} color="white" />
+      </Pressable>
+
           </View>
 
           {/* Información personal (no editable) */}
