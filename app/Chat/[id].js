@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import { useRouter, useSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 export default function Chat() {
   const router = useRouter();
-  const { id } = useSearchParams(); // Obtiene el ID del chat desde la ruta
+  const { id, name } = route.params; 
   const [messages, setMessages] = useState([
     { id: '1', text: 'Hola, ¿cómo estás?', sender: 'other' },
     { id: '2', text: 'Todo bien, ¿y tú?', sender: 'me' },
@@ -24,12 +24,14 @@ export default function Chat() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Chat ID: {id}</Text>
+        <Text style={styles.headerTitle}>{name}</Text>
       </View>
       <FlatList
         data={messages}
